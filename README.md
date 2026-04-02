@@ -1,0 +1,57 @@
+- SRAM (Static Random Access Memory) là loại bộ nhớ dùng để lưu trữ dữ liệu tạm thời với tốc độ cao. 
+Khác với DRAM, SRAM không cần refresh, vì dữ liệu được lưu bằng mạch hồi tiếp (feedback).
+Cell SRAM phổ biến nhất là 6T SRAM, sử dụng 6 transistor để lưu trữ 1 bit dữ liệu.
+- <img width="605" height="487" alt="Image" src="https://github.com/user-attachments/assets/36349a8b-ce11-4930-9602-5f711ca91a7d" />
+- Một cell SRAM 6T gồm:
+  -   2 PMOS + 2 NMOS tạo thành 2 inverter mắc hồi tiếp (cross-coupled)
+  -   2 NMOS access transistor được điều khiển bởi tín hiệu WL cho phép kết nối Q VÀ QB với đường BL và BLB tương ứng
+  -   Q, QB: lưu trữ dữ liệu (0 hoặc 1)
+  -   BL (Bitline), BLB (Bitline Bar): đường dữ liệu
+  -   WL (Wordline): tín hiệu điều khiển
+- SRAM 6T làm việc với 3 chế độ Hold, Write, Read
+- Chế độ Hold
+  -  WL = 0 → access transistor tắt
+  -  Cell bị ngắt khỏi BL/BLB
+  -  2 inverter hồi tiếp giữ trạng thái ổn định: Q = 1 → QB = 0, Q = 0 → QB = 1
+  -  Đây là lý do SRAM không cần refresh
+  -  <img width="621" height="423" alt="Image" src="https://github.com/user-attachments/assets/4f2289ea-b455-4ba7-81d5-fc4a9b8db233" />
+- Chế độ Write
+  -  Driver đặt giá trị lên BL/BLB
+  -  WL = 1 → bật access transistor
+  -  Dữ liệu từ BL/BLB ghi đè trạng thái trong cell
+  -  Transistor access phải đủ mạnh để ghi đè inverter bên trong
+- Chế độ Read
+  -  Precharge: BL = BLB = VDD
+  -  WL = 1 → kết nối cell với BL/BLB
+  -  Node Q/QB tạo ra chênh lệch điện áp nhỏ
+  -  Sense Amplifier khuếch đại sự chênh lệch này
+- PRECHARGE
+- <img width="777" height="326" alt="Image" src="https://github.com/user-attachments/assets/4eed7ac0-ed9c-43d7-b91d-f37b8015344e" />
+- Gồm 3 transistor PMOS:
+  -  2 PMOS kéo lên VDD: Nối vào BL và BLB
+  -  1 PMOS cân bằng (equalizer): Nối giữa BL và BLB
+  -  Tín hiệu điều khiển: PRE
+- Mạch Precharge có nhiệm vụ:
+  -  Nạp trước hai đường bitline (BL, BLB) lên mức điện áp VDD
+  -  Tạo điều kiện ban đầu cân bằng để thực hiện read chính xác
+- Sense amplifier
+- <img width="522" height="416" alt="Image" src="https://github.com/user-attachments/assets/9af3b2da-d545-49f9-afce-b1e3cbbef08f" />
+- Sense amplifier là một mạch khuếch đại chủ động (active circuit), có nhiệm vụ:
+  -  Phát hiện sự chênh lệch điện áp rất nhỏ giữa hai bitline (BL và BLB)
+  -  Khuếch đại tín hiệu này để đưa về mức logic rõ ràng
+- Mạch gồm các thành phần chính:
+  -  M1, M2: cặp transistor vi sai (differential pair)
+  -  M3, M4: mạch current mirror (tải chủ động)
+- Trạng thái cân bằng:
+  -  BL = BLB → M1 và M2 dẫn như nhau: iD1 = iD2 = ISS / 2 
+  -  Output cân bằng, không có chênh lệch
+- Khi có tín hiệu vi sai: Giả sử BL > BLB → Điện áp tại gate M1 lớn hơn M2. Kết quả:
+  -  M1 dẫn mạnh hơn → iD1 tăng
+  -  M2 dẫn yếu hơn → iD2 giảm
+  -  Do tổng dòng không đổi: iD1 tăng = ΔI, iD2 giảm = ΔI
+- Vai trò của Current Mirror
+  -  M3, M4 tạo thành current mirror
+  -  Dòng qua M3 sẽ được copy sang M4: iD3 = iD1, iD4 = iD3 = iD1
+  -  Khi iD1 tăng: iD4 cũng tăng theo Khuếch đại tín hiệu
+- Tại output: Nhánh M2 bị giảm dòng, nhánh M4 lại tăng dòng → Tổng chênh lệch dòng: ΔI (giảm) + ΔI (tăng) = 2ΔI → một sai lệch nhỏ ΔI ở input tạo ra 2ΔI tại output
+- Quá trình diễn ra theo chuỗi: Điện áp nhỏ (BL/BLB) → chuyển thành chênh lệch dòng → dòng được khuếch đại bởi current mirror → chuyển lại thành điện áp output
